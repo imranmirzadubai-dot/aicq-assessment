@@ -12,6 +12,7 @@ permissions:
 engine:
   id: gemini
   version: "0.43.0"
+  model: gemini-3.5-flash-lite
 safe-outputs:
   create-issue:
     max: 1
