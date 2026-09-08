@@ -14,6 +14,9 @@ engine:
   version: "0.43.0"
   model: gemini-3.5-flash-lite
 safe-outputs:
+  create-pull-request:
+    max: 1
+    protected-files: fallback-to-issue
   create-issue:
     max: 1
 ---
