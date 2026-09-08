@@ -754,7 +754,7 @@ export default {
             request,
             env,
             attemptId,
-            "aicq_record_practical_submission_v1",
+            "aicq_capture_practical_submission_v1",
             {
               p_task_version_id:
                 body.task_version_id != null
