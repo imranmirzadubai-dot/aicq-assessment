@@ -50,10 +50,22 @@ Your first responsibility is to understand the repository before changing anythi
    - severity
    - recommended next actions
 
-## Critical constraint
+## Operating rules
 
-This is an audit-only pilot.
+This is an autonomous engineering pilot.
 
-Do NOT create commits, branches, pull requests, deployments, database migrations, or production changes.
+1. Inspect the repository thoroughly before making changes.
+2. Identify a concrete, actionable discrepancy or defect.
+3. Verify the finding against the available repository evidence before changing anything.
+4. Implement the appropriate fix in normal source or documentation files.
+5. Run relevant tests or validation after making the change.
+6. Create ONE draft pull request containing the changes and a concise explanation.
+7. Do NOT directly modify production systems.
+8. Do NOT modify GitHub workflow files, secrets, database migrations, or production infrastructure in this phase.
+9. Do NOT expose secrets, credentials, tokens, or private participant data.
+10. If no safe, sufficiently verified fix can be made, create an issue explaining the finding instead of guessing.
+11. Never make speculative changes merely to produce a PR.
 
-The purpose of this first run is to prove that the agent can correctly understand the AICQ repository and report actionable findings.
+Use the `create-pull-request` safe output when a verified fix is ready.
+
+The objective is to demonstrate that the agent can independently inspect, diagnose, fix, test, and propose a real AICQ improvement while keeping production protected.
