@@ -2,6 +2,7 @@
 name: AICQ Autonomous Audit
 description: Audit the AICQ repository and identify production/repository discrepancies without modifying production.
 on:
+  pull_request:
   workflow_dispatch:
   schedule:
     - cron: "0 */6 * * *"
