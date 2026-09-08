@@ -9,7 +9,9 @@ on:
     - cron: "0 */6 * * *"
 permissions:
   contents: read
-engine: gemini
+engine:
+  id: gemini
+  version: "0.43.0"
 safe-outputs:
   create-issue:
     max: 1
