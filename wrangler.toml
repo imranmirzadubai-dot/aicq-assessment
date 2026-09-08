@@ -1,0 +1,10 @@
+name = "aicq-foundation-api"
+main = "src/index.js"
+compatibility_date = "2026-09-07"
+
+[vars]
+ALLOWED_ORIGIN = "https://aicq-assessment.imranmirzadubai.workers.dev"
+
+# Secrets in Cloudflare:
+# SUPABASE_URL
+# SUPABASE_SERVICE_ROLE_KEY
