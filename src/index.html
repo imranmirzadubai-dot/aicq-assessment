@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AICQ Assessment Portal</title>
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --success: #16a34a;
+      --danger: #dc2626;
+      --radius: 8px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+    body { background-color: var(--bg); color: var(--text); line-height: 1.5; padding: 20px; display: flex; justify-content: center; min-height: 100vh; }
+    .container { width: 100%; max-width: 800px; display: flex; flex-direction: column; gap: 20px; }
+    header { background: var(--card-bg); padding: 20px; border-radius: var(--radius); border: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+    h1 { font-size: 1.5rem; font-weight: 700; color: var(--primary); }
+    .card { background: var(--card-bg); padding: 24px; border-radius: var(--radius); border: 1px solid var(--border); box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+    h2 { font-size: 1.25rem; font-weight: 600; margin-bottom: 16px; }
+    .form-group { margin-bottom: 16px; }
+    label { display: block; font-size: 0.875rem; font-weight: 500; margin-bottom: 6px; color: var(--text); }
+    input, select, textarea { width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: var(--radius); font-size: 1rem; color: var(--text); background: #fff; }
+    input:focus, select:focus, textarea:focus { outline: none; border-color: var(--primary); ring: 2px var(--primary); }
+    button { background: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: var(--radius); font-size: 1rem; font-weight: 500; cursor: pointer; transition: background 0.2s; }
+    button:hover { background: var(--primary-hover); }
+    button:disabled { background: var(--text-muted); cursor: not-allowed; }
+    .btn-secondary { background: #e2e8f0; color: var(--text); }
+    .btn-secondary:hover { background: #cbd5e1; }
+    .error-msg { background: #fef2f2; border: 1px solid #fca5a5; color: var(--danger); padding: 12px; border-radius: var(--radius); margin-bottom: 16px; font-size: 0.875rem; }
+    .success-msg { background: #f0fdf4; border: 1px solid #86efac; color: var(--success); padding: 12px; border-radius: var(--radius); margin-bottom: 16px; font-size: 0.875rem; }
+    .hidden { display: none !important; }
+    .flex-row { display: flex; gap: 12px; }
+    .flex-row > * { flex: 1; }
+    .question-item { margin-bottom: 24px; padding-bottom: 24px; border-bottom: 1px solid var(--border); }
+    .question-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+    .option-label { display: flex; align-items: center; gap: 8px; padding: 8px 12px; border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 8px; cursor: pointer; transition: background 0.1s; }
+    .option-label:hover { background: #f8fafc; }
+    .option-label input { width: auto; }
+    .badge { display: inline-block; padding: 2px 8px; font-size: 0.75rem; font-weight: 600; border-radius: 9999px; background: #e2e8f0; color: var(--text); }
+    .badge-primary { background: #dbeafe; color: var(--primary); }
+    .timer { font-weight: 600; color: var(--danger); }
+    .steps-container { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
+    .step-row { display: flex; gap: 8px; align-items: center; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>AICQ Assessment Portal</h1>
+      <div id="session-info" class="hidden">
+        <span class="badge badge-primary" id="badge-attempt">Attempt Active</span>
+        <button class="btn-secondary" onclick="logout()" style="padding: 6px 12px; font-size: 0.875rem;">Exit</button>
+      </div>
+    </header>
+
+    <!-- Error Banner -->
+    <div id="global-error" class="error-msg hidden"></div>
+
+    <!-- Step 1: Start Attempt / Entry Form -->
+    <div id="view-start" class="card">
+      <h2>Start Assessment</h2>
+      <p style="color: var(--text-muted); margin-bottom: 20px; font-size: 0.875rem;">Enter your details to begin your AICQ professional assessment session.</p>
+      
+      <form id="form-start" onsubmit="handleStartAttempt(event)">
+        <div class="flex-row">
+          <div class="form-group">
+            <label for="assessment-code">Assessment Code</label>
+            <input type="text" id="assessment-code" value="AICQ-P1" required>
+          </div>
+          <div class="form-group">
+            <label for="form-code">Form Code</label>
+            <input type="text" id="form-code" value="AICQ-P1-F01" required>
+          </div>
+        </div>
+
+        <div class="flex-row">
+          <div class="form-group">
+            <label for="form-version">Form Version</label>
+            <input type="text" id="form-version" value="1.0" required>
+          </div>
+          <div class="form-group">
+            <label for="participant-name">Full Name</label>
+            <input type="text" id="participant-name" placeholder="Jane Doe" required>
+          </div>
+        </div>
+
+        <div class="flex-row">
+          <div class="form-group">
+            <label for="participant-age">Age</label>
+            <input type="number" id="participant-age" min="0" max="130" placeholder="30">
+          </div>
+          <div class="form-group">
+            <label for="participant-gender">Gender</label>
+            <select id="participant-gender">
+              <option value="">Prefer not to say</option>
+              <option value="Female">Female</option>
+              <option value="Male">Male</option>
+              <option value="Non-Binary">Non-Binary</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="flex-row">
+          <div class="form-group">
+            <label for="participant-occupation">Occupation</label>
+            <input type="text" id="participant-occupation" placeholder="Software Engineer">
+          </div>
+          <div class="form-group">
+            <label for="participant-experience">Years of Experience</label>
+            <input type="number" id="participant-experience" min="0" max="100" placeholder="5">
+          </div>
+        </div>
+
+        <button type="submit" id="btn-start" style="width: 100%; margin-top: 10px;">Start Assessment Session</button>
+      </form>
+    </div>
+
+    <!-- Step 2: Assessment Workspace (Questions, Confidence, Practical, Submit) -->
+    <div id="view-assessment" class="card hidden">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h2 id="assessment-title" style="margin-bottom: 0;">Assessment In Progress</h2>
+        <div class="badge" id="attempt-id-badge"></div>
+      </div>
+
+      <div id="assessment-content">
+        <!-- Dynamic questions & tasks loaded here -->
+      </div>
+
+      <div style="margin-top: 30px; border-top: 1px solid var(--border); padding-top: 20px; display: flex; justify-content: space-between; align-items: center;">
+        <span style="color: var(--text-muted); font-size: 0.875rem;">Make sure all questions are answered before submitting.</span>
+        <button onclick="submitAssessment()" id="btn-submit" style="background: var(--success);">Submit Final Assessment</button>
+      </div>
+    </div>
+
+    <!-- Step 3: Result View -->
+    <div id="view-result" class="card hidden">
+      <h2>Assessment Result</h2>
+      <div id="result-content">
+        <!-- Results rendered here -->
+      </div>
+      <button onclick="resetApp()" class="btn-secondary" style="margin-top: 20px;">Start New Session</button>
+    </div>
+  </div>
+
+  <script>
+    let state = {
+      apiBase: window.location.origin,
+      attemptId: null,
+      sessionToken: null,
+      attemptData: null,
+      questions: [],
+      practicalTask: null
+    };
+
+    function showError(msg) {
+      const el = document.getElementById('global-error');
+      el.textContent = msg;
+      el.classList.remove('hidden');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function hideError() {
+      const el = document.getElementById('global-error');
+      el.textContent = '';
+      el.classList.add('hidden');
+    }
+
+    async function apiCall(path, method = 'GET', body = null) {
+      const headers = { 'content-type': 'application/json' };
+      if (state.sessionToken) {
+        headers['authorization'] = `Bearer ${state.sessionToken}`;
+      }
+      if (method === 'POST' && path.endsWith('/submit')) {
+        headers['idempotency-key'] = 'idemp-' + crypto.randomUUID();
+      }
+
+      const res = await fetch(`${state.apiBase}${path}`, {
+        method,
+        headers,
+        body: body ? JSON.stringify(body) : null
+      });
+
+      const data = await res.json();
+      if (!res.ok || !data.ok) {
+        throw new Error(data.error?.message || data.error?.code || `HTTP ${res.status}`);
+      }
+      return data;
+    }
+
+    async function handleStartAttempt(e) {
+      e.preventDefault();
+      hideError();
+      const btn = document.getElementById('btn-start');
+      btn.disabled = true;
+      btn.textContent = 'Creating Attempt...';
+
+      try {
+        const payload = {
+          assessment_code: document.getElementById('assessment-code').value.trim(),
+          form_code: document.getElementById('form-code').value.trim(),
+          form_version: document.getElementById('form-version').value.trim(),
+          participant_name: document.getElementById('participant-name').value.trim(),
+          participant_age: document.getElementById('participant-age').value ? parseInt(document.getElementById('participant-age').value) : null,
+          participant_gender: document.getElementById('participant-gender').value || null,
+          participant_occupation: document.getElementById('participant-occupation').value.trim() || null,
+          participant_experience: document.getElementById('participant-experience').value ? parseInt(document.getElementById('participant-experience').value) : null
+        };
+
+        const res = await apiCall('/v1/attempts', 'POST', payload);
+        state.attemptId = res.attempt_id;
+        state.sessionToken = res.session_token;
+
+        document.getElementById('session-info').classList.remove('hidden');
+        document.getElementById('attempt-id-badge').textContent = `Attempt: ${state.attemptId.substring(0, 8)}...`;
+        
+        document.getElementById('view-start').classList.add('hidden');
+        document.getElementById('view-assessment').classList.remove('hidden');
+
+        await loadAssessmentDetails();
+      } catch (err) {
+        showError(err.message);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Start Assessment Session';
+      }
+    }
+
+    async function loadAssessmentDetails() {
+      try {
+        const res = await apiCall(`/v1/attempts/${state.attemptId}`);
+        state.attemptData = res.attempt;
+        state.questions = res.questions || [];
+        state.practicalTask = res.practical_task || null;
+
+        renderAssessment();
+      } catch (err) {
+        showError(err.message);
+      }
+    }
+
+    function renderAssessment() {
+      const container = document.getElementById('assessment-content');
+      let html = '';
+
+      if (state.questions.length > 0) {
+        html += '<h3 style="margin-bottom: 16px;">Knowledge Questions</h3>';
+        state.questions.forEach((q, idx) => {
+          html += `
+            <div class="question-item" id="q-${q.item_version_id}">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <span class="badge">Question ${idx + 1}</span>
+                <span style="font-size: 0.875rem; color: var(--text-muted);">Weight: ${q.weight || 1}</span>
+              </div>
+              <p style="font-weight: 500; margin-bottom: 12px;">${q.prompt || q.question_text || 'Question Prompt'}</p>
+          `;
+
+          if (q.options && Array.isArray(q.options)) {
+            html += '<div style="display: flex; flex-direction: column; gap: 6px;">';
+            q.options.forEach(opt => {
+              html += `
+                <label class="option-label">
+                  <input type="radio" name="question-${q.item_version_id}" value="${opt.option_id}" onchange="recordResponse('${q.item_version_id}', '${opt.option_id}')">
+                  <span>${opt.option_text || opt.text}</span>
+                </label>
+              `;
+            });
+            html += '</div>';
+          }
+
+          // Confidence capture selector (1-5)
+          html += `
+            <div style="margin-top: 12px; display: flex; align-items: center; gap: 12px;">
+              <span style="font-size: 0.875rem; font-weight: 500; color: var(--text-muted);">Confidence (1-5):</span>
+              <div style="display: flex; gap: 8px;">
+          `;
+          for (let c = 1; c <= 5; c++) {
+            html += `
+              <label style="display: flex; align-items: center; gap: 4px; font-size: 0.875rem; cursor: pointer;">
+                <input type="radio" name="conf-${q.item_version_id}" value="${c}" onchange="recordConfidence('${q.item_version_id}', ${c})"> ${c}
+              </label>
+            `;
+          }
+          html += `</div></div></div>`;
+        });
+      }
+
+      if (state.practicalTask) {
+        const pt = state.practicalTask;
+        html += `
+          <h3 style="margin: 24px 0 16px 0;">Practical Task</h3>
+          <div class="question-item">
+            <p style="font-weight: 500; margin-bottom: 12px;">${pt.prompt || pt.task_text || 'Practical Task Instructions'}</p>
+            <div class="form-group">
+              <label>Ordered Steps (comma separated or listed steps)</label>
+              <textarea id="practical-steps" rows="3" placeholder="Step 1, Step 2, Step 3..." onblur="savePractical()"></textarea>
+            </div>
+            <div class="form-group">
+              <label>Additional Submission Data (JSON)</label>
+              <input type="text" id="practical-data" value="{}" onblur="savePractical()">
+            </div>
+          </div>
+        `;
+      }
+
+      container.innerHTML = html;
+    }
+
+    async function recordResponse(itemVersionId, optionId) {
+      try {
+        await apiCall(`/v1/attempts/${state.attemptId}/responses`, 'POST', {
+          item_version_id: itemVersionId,
+          selected_option_id: optionId
+        });
+      } catch (err) {
+        showError(`Failed to save response: ${err.message}`);
+      }
+    }
+
+    async function recordConfidence(itemVersionId, confidence) {
+      try {
+        await apiCall(`/v1/attempts/${state.attemptId}/confidence`, 'POST', {
+          item_version_id: itemVersionId,
+          confidence: confidence
+        });
+      } catch (err) {
+        showError(`Failed to save confidence: ${err.message}`);
+      }
+    }
+
+    async function savePractical() {
+      const stepsText = document.getElementById('practical-steps')?.value || '';
+      const steps = stepsText ? stepsText.split(',').map(s => s.trim()).filter(Boolean) : [];
+      let subData = {};
+      try {
+        const rawData = document.getElementById('practical-data')?.value || '{}';
+        subData = JSON.parse(rawData);
+      } catch {
+        subData = { raw: document.getElementById('practical-data')?.value };
+      }
+
+      if (steps.length === 0 && Object.keys(subData).length === 0) return;
+
+      try {
+        await apiCall(`/v1/attempts/${state.attemptId}/practical`, 'POST', {
+          task_version_id: state.practicalTask?.task_version_id || null,
+          ordered_steps: steps,
+          submission_data: subData
+        });
+      } catch (err) {
+        showError(`Failed to save practical submission: ${err.message}`);
+      }
+    }
+
+    async function submitAssessment() {
+      if (!confirm('Are you sure you want to submit your assessment? This action cannot be undone.')) return;
+      hideError();
+      const btn = document.getElementById('btn-submit');
+      btn.disabled = true;
+      btn.textContent = 'Submitting...';
+
+      try {
+        await savePractical();
+        await apiCall(`/v1/attempts/${state.attemptId}/submit`, 'POST', {});
+        
+        // Load result
+        const res = await apiCall(`/v1/attempts/${state.attemptId}/result`, 'GET');
+        renderResult(res.result);
+
+        document.getElementById('view-assessment').classList.add('hidden');
+        document.getElementById('view-result').classList.remove('hidden');
+        document.getElementById('session-info').classList.add('hidden');
+      } catch (err) {
+        showError(`Submission failed: ${err.message}`);
+        btn.disabled = false;
+        btn.textContent = 'Submit Final Assessment';
+      }
+    }
+
+    function renderResult(result) {
+      const container = document.getElementById('result-content');
+      container.innerHTML = `
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+          <div class="success-msg">Assessment successfully submitted and scored!</div>
+          <div style="display: flex; justify-content: space-between; padding: 12px; background: #f8fafc; border-radius: var(--radius);">
+            <span style="font-weight: 500;">Overall Status</span>
+            <span class="badge badge-primary">${result.status || 'COMPLETED'}</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; padding: 12px; background: #f8fafc; border-radius: var(--radius);">
+            <span style="font-weight: 500;">Knowledge Score</span>
+            <span style="font-weight: 600;">${result.knowledge_score ?? result.score ?? 'N/A'}</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; padding: 12px; background: #f8fafc; border-radius: var(--radius);">
+            <span style="font-weight: 500;">Practical Score</span>
+            <span style="font-weight: 600;">${result.practical_score ?? 'N/A'}</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; padding: 12px; background: #f8fafc; border-radius: var(--radius);">
+            <span style="font-weight: 500;">Overall Score</span>
+            <span style="font-weight: 600; color: var(--primary);">${result.overall_score ?? result.score ?? 'N/A'}</span>
+          </div>
+        </div>
+      `;
+    }
+
+    function logout() {
+      state.attemptId = null;
+      state.sessionToken = null;
+      state.attemptData = null;
+      document.getElementById('session-info').classList.add('hidden');
+      document.getElementById('view-assessment').classList.add('hidden');
+      document.getElementById('view-result').classList.add('hidden');
+      document.getElementById('view-start').classList.remove('hidden');
+    }
+
+    function resetApp() {
+      logout();
+    }
+  </script>
+</body>
+</html>
