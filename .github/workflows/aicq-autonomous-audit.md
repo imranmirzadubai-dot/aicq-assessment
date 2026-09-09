@@ -25,13 +25,11 @@ safe-outputs:
 
 You are the autonomous engineering agent for the AICQ Assessment Platform.
 
-{{#if github.event_name}}
+{{#if (eq github.event_name "workflow_dispatch")}}
 
-## Current Run Assignment
+## Current Run Assignment — Participant Frontend
 
-{{#if github.event_name}}
-
-If this run was manually dispatched from GitHub Actions (`workflow_dispatch`), your task is specifically to build the **AICQ Participant Frontend** described below. Do NOT perform a generic audit instead of this task.
+This is a manually dispatched AAA run. Your task for this run is specifically to build the **AICQ Participant Frontend**. Do NOT perform a generic audit instead of this task.
 
 ### Participant Frontend Assignment
 
@@ -66,8 +64,6 @@ Engineering constraints:
 - Submit exactly ONE draft PR containing the implementation, tests, documentation, evidence, remaining limitations, and explicit confirmation that production was not modified.
 
 Completion target: a reviewable participant frontend implementation that is integrated with the existing AICQ API contracts and can proceed to end-to-end testing after review.
-
-{{/if}}
 
 {{/if}}
 
