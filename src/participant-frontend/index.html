@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AICQ Participant Assessment Platform</title>
+    <style>
+        :root {
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-card: #334155;
+            --accent: #38bdf8;
+            --accent-hover: #0ea5e9;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border: #475569;
+            --success: #22c55e;
+            --error: #ef4444;
+            --warning: #f59e0b;
+        }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        }
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        header {
+            background-color: var(--bg-secondary);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo {
+            font-weight: 700;
+            font-size: 1.25rem;
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .container {
+            max-width: 900px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+            flex: 1;
+            width: 100%;
+        }
+        .card {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 0.75rem;
+            padding: 2rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+        }
+        h1, h2, h3 {
+            margin-bottom: 1rem;
+        }
+        p {
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+            line-height: 1.5;
+        }
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text-main);
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background-color: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            color: var(--text-main);
+            font-size: 1rem;
+        }
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+        button {
+            background-color: var(--accent);
+            color: var(--bg-primary);
+            font-weight: 600;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.2s;
+        }
+        button:hover {
+            background-color: var(--accent-hover);
+        }
+        button.secondary {
+            background-color: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-main);
+        }
+        button.secondary:hover {
+            background-color: var(--bg-card);
+        }
+        .btn-group {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        .error-banner {
+            background-color: rgba(239, 68, 68, 0.1);
+            border: 1px solid var(--error);
+            color: #fca5a5;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .success-banner {
+            background-color: rgba(34, 197, 94, 0.1);
+            border: 1px solid var(--success);
+            color: #86efac;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .hidden {
+            display: none !important;
+        }
+        .option-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+        .option-item {
+            background-color: var(--bg-primary);
+            border: 1px solid var(--border);
+            padding: 1rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: border-color 0.2s;
+        }
+        .option-item:hover {
+            border-color: var(--accent);
+        }
+        .option-item.selected {
+            border-color: var(--accent);
+            background-color: rgba(56, 189, 248, 0.05);
+        }
+        .progress-bar {
+            height: 6px;
+            background-color: var(--bg-primary);
+            border-radius: 3px;
+            margin-bottom: 2rem;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background-color: var(--accent);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        .stat-card {
+            background-color: var(--bg-primary);
+            border: 1px solid var(--border);
+            padding: 1.25rem;
+            border-radius: 0.5rem;
+            text-align: center;
+        }
+        .stat-value {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin-top: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            AICQ Assessment
+        </div>
+        <div id="session-info" class="hidden" style="color: var(--text-muted); font-size: 0.875rem;">
+            Attempt ID: <span id="header-attempt-id" style="font-family: monospace; color: var(--text-main);"></span>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Error Banner -->
+        <div id="global-error" class="error-banner hidden"></div>
+
+        <!-- STEP 1: Entry / Create Attempt -->
+        <div id="step-entry" class="card">
+            <h2>Start Assessment Attempt</h2>
+            <p>Enter your details and assessment identifiers to begin your secure AICQ participant session.</p>
+            <form id="entry-form">
+                <div class="form-group">
+                    <label for="api-base">Worker API Base URL</label>
+                    <input type="text" id="api-base" value="https://aicq-foundation-api.imranmirzadubai.workers.dev" required>
+                </div>
+                <div class="form-group">
+                    <label for="participant-id">Participant ID (UUID)</label>
+                    <input type="text" id="participant-id" placeholder="e.g. 00000000-0000-0000-0000-000000000001" required>
+                </div>
+                <div class="form-group">
+                    <label for="assessment-id">Assessment ID (UUID)</label>
+                    <input type="text" id="assessment-id" placeholder="e.g. 00000000-0000-0000-0000-000000000001" required>
+                </div>
+                <div class="form-group">
+                    <label for="program-id">Program ID (UUID - Optional)</label>
+                    <input type="text" id="program-id" placeholder="Leave blank if none">
+                </div>
+                <div class="form-group">
+                    <label for="organization-id">Organization ID (UUID - Optional)</label>
+                    <input type="text" id="organization-id" placeholder="Leave blank if none">
+                </div>
+                <button type="submit" style="width: 100%; margin-top: 1rem;">Create Attempt & Start Session</button>
+            </form>
+        </div>
+
+        <!-- STEP 2: Dashboard / Lobby -->
+        <div id="step-lobby" class="card hidden">
+            <h2>Assessment Lobby</h2>
+            <p>Your attempt and session have been successfully created. Review your session details below and start when ready.</p>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div>Attempt Status</div>
+                    <div id="lobby-status" class="stat-value" style="font-size: 1.25rem;">CREATED</div>
+                </div>
+                <div class="stat-card">
+                    <div>Total Items</div>
+                    <div class="stat-value">32</div>
+                </div>
+                <div class="stat-card">
+                    <div>Time Limit</div>
+                    <div class="stat-value">60 mins</div>
+                </div>
+            </div>
+            <div class="btn-group">
+                <button id="btn-start-attempt" style="flex: 1;">Start Assessment Now</button>
+            </div>
+        </div>
+
+        <!-- STEP 3: Question Item Runner -->
+        <div id="step-runner" class="card hidden">
+            <div class="progress-bar">
+                <div id="progress-fill" class="progress-fill"></div>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <span id="item-counter" style="color: var(--text-muted); font-weight: 500;">Question 1 of 32</span>
+                <span id="item-competency" style="background-color: var(--bg-primary); padding: 0.25rem 0.75rem; border-radius: 1rem; font-size: 0.875rem; border: 1px solid var(--border);">Competency</span>
+            </div>
+            <h3 id="item-prompt" style="margin-bottom: 1.5rem; font-size: 1.25rem;">Loading question...</h3>
+            
+            <div id="options-container" class="option-list">
+                <!-- Dynamically populated options -->
+            </div>
+
+            <!-- Confidence Rating Section -->
+            <div id="confidence-section" style="margin-top: 2rem; border-top: 1px solid var(--border); padding-top: 1.5rem;">
+                <label style="margin-bottom: 0.75rem;">How confident are you in your answer? (1 = Guessing, 5 = Absolute Certainty)</label>
+                <div style="display: flex; gap: 0.75rem;">
+                    <button type="button" class="secondary confidence-btn" data-val="1" style="flex: 1;">1</button>
+                    <button type="button" class="secondary confidence-btn" data-val="2" style="flex: 1;">2</button>
+                    <button type="button" class="secondary confidence-btn" data-val="3" style="flex: 1;">3</button>
+                    <button type="button" class="secondary confidence-btn" data-val="4" style="flex: 1;">4</button>
+                    <button type="button" class="secondary confidence-btn" data-val="5" style="flex: 1;">5</button>
+                </div>
+            </div>
+
+            <div class="btn-group" style="margin-top: 2rem;">
+                <button id="btn-prev-item" class="secondary" style="flex: 1;">Previous</button>
+                <button id="btn-skip-item" class="secondary" style="flex: 1;">Skip</button>
+                <button id="btn-next-item" style="flex: 2;">Save & Next</button>
+            </div>
+            <div style="margin-top: 1rem; text-align: center;">
+                <button id="btn-proceed-practical" class="secondary hidden" style="width: 100%; border-color: var(--accent); color: var(--accent);">Proceed to Practical Tasks & Submit</button>
+            </div>
+        </div>
+
+        <!-- STEP 4: Practical Tasks & Submission -->
+        <div id="step-practical" class="card hidden">
+            <h2>Practical Assessment & Final Submission</h2>
+            <p>Review your practical task requirements, order your solution steps, and submit your assessment securely.</p>
+            
+            <div class="form-group">
+                <label for="practical-steps">Ordered Steps (Comma-separated step IDs or descriptions)</label>
+                <textarea id="practical-steps" rows="4" placeholder="step_1, step_2, step_3" required>step_compile, step_test, step_verify</textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="idempotency-input">Submission Idempotency Key (UUID or unique string, min 8 chars)</label>
+                <input type="text" id="idempotency-input" value="aicq-sub-2026-001" required>
+            </div>
+
+            <div class="btn-group">
+                <button id="btn-submit-assessment" style="width: 100%; background-color: var(--success); color: white;">Final Submit Assessment</button>
+            </div>
+        </div>
+
+        <!-- STEP 5: Results View -->
+        <div id="step-results" class="card hidden">
+            <h2>Assessment Results</h2>
+            <p>Your assessment has been successfully scored and recorded.</p>
+            <div class="success-banner">Assessment Completed Successfully!</div>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div>Final Score</div>
+                    <div id="result-score" class="stat-value">--</div>
+                </div>
+                <div class="stat-card">
+                    <div>Percentage</div>
+                    <div id="result-percentage" class="stat-value">--</div>
+                </div>
+                <div class="stat-card">
+                    <div>Status</div>
+                    <div id="result-status" class="stat-value" style="font-size: 1.25rem;">PASSED</div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Detailed Result JSON</label>
+                <textarea id="result-json" rows="8" readonly style="font-family: monospace; font-size: 0.875rem;"></textarea>
+            </div>
+
+            <div class="btn-group">
+                <button id="btn-restart" class="secondary" style="width: 100%;">Start New Attempt</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let state = {
+            apiBase: "https://aicq-foundation-api.imranmirzadubai.workers.dev",
+            attemptId: null,
+            sessionToken: null,
+            currentPosition: 1,
+            totalItems: 32,
+            currentItemVersionId: null,
+            selectedOptionId: null,
+            selectedConfidence: null,
+            optionOrder: [],
+            presentationSequence: null
+        };
+
+        const showError = (msg) => {
+            const el = document.getElementById("global-error");
+            el.textContent = msg;
+            el.classList.remove("hidden");
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        };
+
+        const clearError = () => {
+            const el = document.getElementById("global-error");
+            el.textContent = "";
+            el.classList.add("hidden");
+        };
+
+        const switchStep = (stepId) => {
+            ['step-entry', 'step-lobby', 'step-runner', 'step-practical', 'step-results'].forEach(id => {
+                document.getElementById(id).classList.add('hidden');
+            });
+            document.getElementById(stepId).classList.remove('hidden');
+        };
+
+        // 1. Entry / Create Attempt
+        document.getElementById("entry-form").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            clearError();
+
+            state.apiBase = document.getElementById("api-base").value.trim().replace(/\/+$/, "");
+            const participant_id = document.getElementById("participant-id").value.trim();
+            const assessment_id = document.getElementById("assessment-id").value.trim();
+            const program_id = document.getElementById("program-id").value.trim() || null;
+            const organization_id = document.getElementById("organization-id").value.trim() || null;
+
+            try {
+                const res = await fetch(`${state.apiBase}/v1/attempts`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        participant_id,
+                        assessment_id,
+                        program_id,
+                        organization_id
+                    })
+                });
+
+                const data = await res.json();
+                if (!res.ok || !data.ok) {
+                    throw new Error(data.error?.message || `Failed to create attempt: HTTP ${res.status}`);
+                }
+
+                state.attemptId = data.attempt.attempt_id;
+                state.sessionToken = data.session.session_token;
+
+                document.getElementById("header-attempt-id").textContent = state.attemptId;
+                document.getElementById("session-info").classList.remove("hidden");
+                document.getElementById("lobby-status").textContent = data.attempt.status || "CREATED";
+
+                switchStep("step-lobby");
+            } catch (err) {
+                showError(err.message);
+            }
+        });
+
+        // 2. Lobby -> Start Attempt
+        document.getElementById("btn-start-attempt").addEventListener("click", async () => {
+            clearError();
+            try {
+                const res = await fetch(`${state.apiBase}/v1/attempts/${state.attemptId}/start`, {
+                    method: "POST",
+                    headers: {
+                        "Authorization": `Bearer ${state.sessionToken}`,
+                        "Content-Type": "application/json"
+                    }
+                });
+
+                const data = await res.json();
+                if (!res.ok || !data.ok) {
+                    throw new Error(data.error?.message || `Failed to start attempt: HTTP ${res.status}`);
+                }
+
+                state.currentPosition = 1;
+                switchStep("step-runner");
+                await loadItem(state.currentPosition);
+            } catch (err) {
+                showError(err.message);
+            }
+        });
+
+        // Load Item
+        async function loadItem(position) {
+            clearError();
+            try {
+                const res = await fetch(`${state.apiBase}/v1/attempts/${state.attemptId}/items/${position}`, {
+                    method: "GET",
+                    headers: {
+                        "Authorization": `Bearer ${state.sessionToken}`
+                    }
+                });
+
+                const data = await res.json();
+                if (!res.ok || !data.ok) {
+                    throw new Error(data.error?.message || `Failed to load item ${position}: HTTP ${res.status}`);
+                }
+
+                const item = data.item;
+                state.currentItemVersionId = item.item_version_id;
+                state.selectedOptionId = null;
+                state.selectedConfidence = null;
+                state.presentationSequence = item.presentation_sequence || position;
+                state.optionOrder = item.options ? item.options.map(o => o.option_id) : [];
+
+                document.getElementById("item-counter").textContent = `Question ${position} of ${state.totalItems}`;
+                document.getElementById("item-competency").textContent = item.competency_name || "Assessment Item";
+                document.getElementById("item-prompt").textContent = item.prompt || item.stem || "No prompt available.";
+
+                const progressPct = (position / state.totalItems) * 100;
+                document.getElementById("progress-fill").style.width = `${progressPct}%`;
+
+                // Render options
+                const optContainer = document.getElementById("options-container");
+                optContainer.innerHTML = "";
+
+                if (item.options && Array.isArray(item.options)) {
+                    item.options.forEach((opt, idx) => {
+                        const div = document.createElement("div");
+                        div.className = "option-item";
+                        div.innerHTML = `<strong>${String.fromCharCode(65 + idx)}.</strong> <span>${opt.option_text || opt.text}</span>`;
+                        div.addEventListener("click", () => {
+                            document.querySelectorAll(".option-item").forEach(el => el.classList.remove("selected"));
+                            div.classList.add("selected");
+                            state.selectedOptionId = opt.option_id;
+                        });
+                        optContainer.appendChild(div);
+                    });
+                }
+
+                // Reset confidence buttons
+                document.querySelectorAll(".confidence-btn").forEach(btn => {
+                    btn.classList.add("secondary");
+                    btn.style.borderColor = "var(--border)";
+                });
+
+                // Show/hide proceed to practical button on last question or allow anytime
+                if (position >= state.totalItems) {
+                    document.getElementById("btn-proceed-practical").classList.remove("hidden");
+                } else {
+                    document.getElementById("btn-proceed-practical").classList.add("hidden");
+                }
+
+            } catch (err) {
+                showError(err.message);
+            }
+        }
+
+        // Confidence selection
+        document.querySelectorAll(".confidence-btn").forEach(btn => {
+            btn.addEventListener("click", async () => {
+                const val = Number(btn.getAttribute("data-val"));
+                state.selectedConfidence = val;
+                
+                document.querySelectorAll(".confidence-btn").forEach(b => {
+                    b.classList.add("secondary");
+                    b.style.borderColor = "var(--border)";
+                });
+                btn.classList.remove("secondary");
+                btn.style.borderColor = "var(--accent)";
+
+                // Record confidence via API
+                try {
+                    await fetch(`${state.apiBase}/v1/attempts/${state.attemptId}/confidence`, {
+                        method: "POST",
+                        headers: {
+                            "Authorization": `Bearer ${state.sessionToken}`,
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({
+                            confidence: val,
+                            item_version_id: state.currentItemVersionId
+                        })
+                    });
+                } catch (err) {
+                    console.error("Failed to record confidence:", err);
+                }
+            });
+        });
+
+        // Next Item / Save Response
+        document.getElementById("btn-next-item").addEventListener("click", async () => {
+            clearError();
+            if (!state.currentItemVersionId) return;
+
+            try {
+                const res = await fetch(`${state.apiBase}/v1/attempts/${state.attemptId}/responses`, {
+                    method: "POST",
+                    headers: {
+                        "Authorization": `Bearer ${state.sessionToken}`,
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        item_version_id: state.currentItemVersionId,
+                        selected_option_id: state.selectedOptionId,
+                        skipped: false,
+                        response_time_ms: 15000,
+                        presentation_sequence: state.presentationSequence,
+                        option_order: state.optionOrder
+                    })
+                });
+
+                const data = await res.json();
+                if (!res.ok || !data.ok) {
+                    throw new Error(data.error?.message || `Failed to save response: HTTP ${res.status}`);
+                }
+
+                if (state.currentPosition < state.totalItems) {
+                    state.currentPosition++;
+                    await loadItem(state.currentPosition);
+                } else {
+                    switchStep("step-practical");
+                }
+            } catch (err) {
+                showError(err.message);
+            }
+        });
+
+        // Skip Item
+        document.getElementById("btn-skip-item").addEventListener("click", async () => {
+            clearError();
+            if (!state.currentItemVersionId) return;
+
+            try {
+                await fetch(`${state.apiBase}/v1/attempts/${state.attemptId}/responses`, {
+                    method: "POST",
+                    headers: {
+                        "Authorization": `Bearer ${state.sessionToken}`,
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        item_version_id: state.currentItemVersionId,
+                        selected_option_id: null,
+                        skipped: true,
+                        response_time_ms: 2000,
+                        presentation_sequence: state.presentationSequence,
+                        option_order: state.optionOrder
+                    })
+                });
+
+                if (state.currentPosition < state.totalItems) {
+                    state.currentPosition++;
+                    await loadItem(state.currentPosition);
+                } else {
+                    switchStep("step-practical");
+                }
+            } catch (err) {
+                showError(err.message);
+            }
+        });
+
+        // Previous Item
+        document.getElementById("btn-prev-item").addEventListener("click", async () => {
+            if (state.currentPosition > 1) {
+                state.currentPosition--;
+                await loadItem(state.currentPosition);
+            }
+        });
+
+        document.getElementById("btn-proceed-practical").addEventListener("click", () => {
+            switchStep("step-practical");
+        });
+
+        // Final Submit
+        document.getElementById("btn-submit-assessment").addEventListener("click", async () => {
+            clearError();
+            const stepsRaw = document.getElementById("practical-steps").value.trim();
+            const ordered_steps = stepsRaw.split(",").map(s => s.trim()).filter(Boolean);
+            const idempotencyKey = document.getElementById("idempotency-input").value.trim();
+
+            try {
+                // 1. Submit practical first
+                await fetch(`${state.apiBase}/v1/attempts/${state.attemptId}/practical`, {
+                    method: "POST",
+                    headers: {
+                        "Authorization": `Bearer ${state.sessionToken}`,
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        ordered_steps,
+                        submission_data: { notes: "Submitted via AICQ Participant Frontend" }
+                    })
+                });
+
+                // 2. Final Submit Attempt
+                const submitRes = await fetch(`${state.apiBase}/v1/attempts/${state.attemptId}/submit`, {
+                    method: "POST",
+                    headers: {
+                        "Authorization": `Bearer ${state.sessionToken}`,
+                        "Content-Type": "application/json",
+                        "Idempotency-Key": idempotencyKey
+                    },
+                    body: JSON.stringify({ submitted_at: new Date().toISOString() })
+                });
+
+                const submitData = await submitRes.json();
+                if (!submitRes.ok || !submitData.ok) {
+                    throw new Error(submitData.error?.message || `Failed to submit attempt: HTTP ${submitRes.status}`);
+                }
+
+                // 3. Get Results
+                const resultRes = await fetch(`${state.apiBase}/v1/attempts/${state.attemptId}/result`, {
+                    method: "GET",
+                    headers: {
+                        "Authorization": `Bearer ${state.sessionToken}`
+                    }
+                });
+
+                const resultData = await resultRes.json();
+                if (!resultRes.ok || !resultData.ok) {
+                    throw new Error(resultData.error?.message || `Failed to load result: HTTP ${resultRes.status}`);
+                }
+
+                const resObj = resultData.result;
+                document.getElementById("result-score").textContent = resObj.score ?? resObj.total_score ?? "Completed";
+                document.getElementById("result-percentage").textContent = resObj.percentage != null ? `${resObj.percentage}%` : "--";
+                document.getElementById("result-status").textContent = resObj.status || "PASSED";
+                document.getElementById("result-json").value = JSON.stringify(resultData, null, 2);
+
+                switchStep("step-results");
+
+            } catch (err) {
+                showError(err.message);
+            }
+        });
+
+        document.getElementById("btn-restart").addEventListener("click", () => {
+            state.attemptId = null;
+            state.sessionToken = null;
+            state.currentPosition = 1;
+            document.getElementById("session-info").classList.add("hidden");
+            switchStep("step-entry");
+        });
+    </script>
+</body>
+</html>

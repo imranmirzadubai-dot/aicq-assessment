@@ -1,0 +1,33 @@
+{
+  "mcpServers": {
+    "github": {
+      "headers": {
+        "Authorization": "GZVpCYTISlej8dSdnuSGUnrKT31iacyTJ26GNldcRkD8DeX73H1slfQiCcNi"
+      },
+      "url": "http://awmg-mcpg:8080/mcp/github"
+    },
+    "safeoutputs": {
+      "headers": {
+        "Authorization": "GZVpCYTISlej8dSdnuSGUnrKT31iacyTJ26GNldcRkD8DeX73H1slfQiCcNi"
+      },
+      "url": "http://awmg-mcpg:8080/mcp/safeoutputs"
+    }
+  },
+  "context": {
+    "includeDirectories": [
+      "/tmp/"
+    ]
+  },
+  "tools": {
+    "core": [
+      "glob",
+      "grep_search",
+      "list_directory",
+      "read_file",
+      "read_many_files",
+      "replace",
+      "run_shell_command",
+      "write_file"
+    ]
+  }
+}
