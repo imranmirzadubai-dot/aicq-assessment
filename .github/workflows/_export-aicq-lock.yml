@@ -12,16 +12,21 @@ permissions:
 jobs:
   export:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
           token: ${{ secrets.GH_AW_GITHUB_TOKEN }}
+
+      - name: Install gh-aw
         run: |
           curl -sL https://raw.githubusercontent.com/github/gh-aw/v0.88.7/install-gh-aw.sh | bash
           echo "$HOME/.local/share/gh/extensions/gh-aw" >> "$GITHUB_PATH"
+
       - name: Compile
         run: gh aw compile .github/workflows/aicq-autonomous-audit.md
+
       - name: Commit generated lock with elevated token
         env:
           GH_TOKEN: ${{ secrets.GH_AW_GITHUB_TOKEN }}
