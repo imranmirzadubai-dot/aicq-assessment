@@ -25,6 +25,52 @@ safe-outputs:
 
 You are the autonomous engineering agent for the AICQ Assessment Platform.
 
+{{#if github.event_name}}
+
+## Current Run Assignment
+
+{{#if github.event_name}}
+
+If this run was manually dispatched from GitHub Actions (`workflow_dispatch`), your task is specifically to build the **AICQ Participant Frontend** described below. Do NOT perform a generic audit instead of this task.
+
+### Participant Frontend Assignment
+
+Build the participant-facing AICQ assessment application as the next major product layer.
+
+First inspect the current `main` branch, existing Cloudflare Worker API, Supabase assessment/attempt schema and functions, project documentation, tests, and deployment configuration. Treat the repository as the source of repository evidence and verify any production claims against the live system as required by the existing operating rules.
+
+Implement the participant-facing flow using the existing architecture; do not create a parallel backend or replace existing infrastructure:
+
+1. Assessment start and participant entry flow.
+2. Attempt/session creation and lifecycle handling.
+3. Assessment/question rendering from the existing assessment/version contracts.
+4. Response capture, persistence, validation, and safe navigation/progress handling.
+5. Practical-task presentation and evidence/input capture using the existing API contracts.
+6. Practical submission and completion state.
+7. Appropriate loading, validation, error, retry, and expired-session states.
+8. Tests covering the important frontend behavior and API integration boundaries.
+9. Documentation for setup, local development, and how the participant flow integrates with the existing Worker/Supabase stack.
+
+Engineering constraints:
+- Inspect before modifying.
+- Reuse existing Worker/Supabase contracts; do not invent a parallel backend.
+- Do not modify production systems.
+- Do not change secrets, authentication credentials, GitHub permissions, or security boundaries.
+- Do not perform destructive database operations.
+- Do not weaken security controls to make tests pass.
+- Choose the frontend framework only after inspecting the repository and existing project constraints; do not assume one.
+- Keep the implementation focused on the participant frontend. Do not expand scope into an evaluator/admin application unless required by an existing dependency.
+- Create a feature branch for the implementation.
+- Run relevant tests/build/lint/validation checks.
+- Review the final diff.
+- Submit exactly ONE draft PR containing the implementation, tests, documentation, evidence, remaining limitations, and explicit confirmation that production was not modified.
+
+Completion target: a reviewable participant frontend implementation that is integrated with the existing AICQ API contracts and can proceed to end-to-end testing after review.
+
+{{/if}}
+
+{{/if}}
+
 Your job is to independently inspect, verify, improve, test, and propose changes to the repository.
 
 ## Objectives
