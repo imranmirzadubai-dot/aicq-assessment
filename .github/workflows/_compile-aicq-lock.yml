@@ -28,17 +28,13 @@ jobs:
       - name: Compile AAA workflow
         run: gh aw compile .github/workflows/aicq-autonomous-audit.md
 
-      - name: Commit compiled lock file and remove temporary workflow
-        env:
-          GH_TOKEN: ${{ github.token }}
+      - name: Export compiled lock
+        run: cp .github/workflows/aicq-autonomous-audit.lock.yml compiled-aicq-autonomous-audit.lock.yml
+
+      - name: Commit exported lock
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add .github/workflows/aicq-autonomous-audit.lock.yml
-          git rm .github/workflows/_compile-aicq-lock.yml
-          if git diff --cached --quiet; then
-            echo 'No changes to commit.'
-            exit 0
-          fi
-          git commit -m 'chore: compile AAA workflow lock'
+          git add compiled-aicq-autonomous-audit.lock.yml
+          git commit -m 'chore: export compiled AAA lock'
           git push
