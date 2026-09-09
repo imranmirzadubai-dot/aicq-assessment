@@ -2,7 +2,6 @@
 name: AICQ Autonomous Audit
 description: Autonomous engineering agent for the AICQ Assessment Platform. Inspects, verifies, improves, tests, and proposes repository changes without directly modifying production.
 on:
-  on:
   bots:
     - github-actions
   pull_request:
