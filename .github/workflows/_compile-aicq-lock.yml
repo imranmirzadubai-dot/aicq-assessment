@@ -21,7 +21,9 @@ jobs:
           fetch-depth: 0
 
       - name: Install GitHub Agentic Workflows CLI
-        run: gh extension install github/gh-aw@v0.88.7
+        run: |
+          curl -sL https://raw.githubusercontent.com/github/gh-aw/v0.88.7/install-gh-aw.sh | bash
+          echo "$HOME/.local/share/gh/extensions/gh-aw" >> "$GITHUB_PATH"
 
       - name: Compile AAA workflow
         run: gh aw compile .github/workflows/aicq-autonomous-audit.md
