@@ -1,0 +1,42 @@
+name: Compile AICQ Agentic Workflow Lock
+
+on:
+  push:
+    paths:
+      - '.github/workflows/_compile-aicq-lock.yml'
+      - '.github/workflows/aicq-autonomous-audit.md'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  compile:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install GitHub Agentic Workflows CLI
+        run: gh extension install github/gh-aw@v0.88.7
+
+      - name: Compile AAA workflow
+        run: gh aw compile .github/workflows/aicq-autonomous-audit.md
+
+      - name: Commit compiled lock file and remove temporary workflow
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add .github/workflows/aicq-autonomous-audit.lock.yml
+          git rm .github/workflows/_compile-aicq-lock.yml
+          if git diff --cached --quiet; then
+            echo 'No changes to commit.'
+            exit 0
+          fi
+          git commit -m 'chore: compile AAA workflow lock'
+          git push
