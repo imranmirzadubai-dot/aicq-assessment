@@ -8,11 +8,6 @@ on:
   schedule:
     - cron: "0 */6 * * *"
 
-permissions:
-  contents: write
-  pull-requests: write
-  issues: write
-
 engine:
   id: gemini
   version: "0.43.0"
